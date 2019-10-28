@@ -91,7 +91,7 @@ func execHookBash(hook GithubHook) error {
 	log.Infof("Execute command: %s", command)
 
 	if !ok {
-		return fmt.Errorf("config中找不到相应库得配置")
+		return fmt.Errorf("config中找不到相应库得配置, configs: %v, name: %s", configs, command)
 	}
 
 	cmd := exec.Command("/bin/bash", "-c", command)
