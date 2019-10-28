@@ -33,7 +33,7 @@ func PushHookHandler(c *gin.Context) {
 	json.Unmarshal(data, &fields)
 	log.WithFields(fields).Info("request_raw")
 
-	fmt.Printf("%s \n", data)
+	// fmt.Printf("%s \n", data)
 
 	err := execHookBash(params)
 	if err != nil {
