@@ -2,11 +2,13 @@ package github_hook
 
 import (
 	"encoding/json"
-	// "fmt"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"os/exec"
 )
 
+// Start 启动服务
 func Start() {
 	r := gin.Default()
 	log.Info("start...")
@@ -21,9 +23,10 @@ func Start() {
 	r.Run() // listen and serve on 0.0.0.0:8080
 }
 
+// PushHookHandler 处理推送事件
 func PushHookHandler(c *gin.Context) {
 	data, _ := c.GetRawData()
-	params := GITHUB_HOOK{}
+	params := GithubHook{}
 	json.Unmarshal(data, &params)
 
 	log.WithFields(logrus.Fields{
@@ -35,7 +38,8 @@ func PushHookHandler(c *gin.Context) {
 	}).Infof("%s", data)
 }
 
-type GITHUB_HOOK struct {
+// GithubHook github的json结构
+type GithubHook struct {
 	Zen    string
 	HookID int
 	Hook   struct {
@@ -59,4 +63,34 @@ type GITHUB_HOOK struct {
 		Type      string
 		SiteAdmin bool
 	}
+}
+
+// 项目名映射得脚本文件
+var configs = map[string]string{
+	"github_hook": "./scripts/hook",
+}
+
+// 执行脚本目录
+const hookScriptDirPath = "./scripts"
+
+// 执行推送的逻辑
+func execHookBash(hook GithubHook) error {
+
+	command, ok := configs[hook.Repository.Name]
+	command = fmt.Sprintf("%s/%s", hookScriptDirPath, command)
+	log.Infof("Execute command: %s", command)
+
+	if !ok {
+		return fmt.Errorf("config中找不到相应库得配置")
+	}
+
+	cmd := exec.Command("/bin/bash", "-c", command)
+	output, err := cmd.Output()
+
+	if err != nil {
+		log.Errorf("Execute Shell:%s failed with error:%s", command, err.Error())
+		return fmt.Errorf("Execute Shell:%s failed with error:%s", command, err.Error())
+	}
+	log.Infof("Execute Shell:%s finished with output:\n%s", command, string(output))
+	return nil
 }

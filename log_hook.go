@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-// 自定义hook
+// CustomHook 自定义hook
 func CustomHook(filename, perm string) logrus.Hook {
 	h := Hook{}
 	h.Filename = filename
@@ -18,16 +18,19 @@ func CustomHook(filename, perm string) logrus.Hook {
 	return h
 }
 
+// Hook 日志钩子结构体
 type Hook struct {
 	Filename string
 	Perm     string
 	Fd       *os.File
 }
 
+// Levels 日志可用级别
 func (h Hook) Levels() []logrus.Level {
 	return logrus.AllLevels
 }
 
+// Fire 日志写入函数
 func (h Hook) Fire(f *logrus.Entry) error {
 	serialized, err := f.Logger.Formatter.Format(f)
 	if err != nil {
@@ -41,7 +44,7 @@ func (h Hook) Fire(f *logrus.Entry) error {
 func (h *Hook) init() {
 	err := h.createFile()
 	if err != nil {
-		panic(fmt.Errorf("日志初始化错误, Error: %v \n", err))
+		panic(fmt.Errorf("日志初始化错误, Error: %v", err))
 	}
 }
 
