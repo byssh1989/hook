@@ -33,6 +33,8 @@ func PushHookHandler(c *gin.Context) {
 	json.Unmarshal(data, &fields)
 	log.WithFields(fields).Info("request_raw")
 
+	fmt.Printf("%s \n", data)
+
 	err := execHookBash(params)
 	if err != nil {
 		log.Error(err)
@@ -91,7 +93,7 @@ func execHookBash(hook GithubHook) error {
 	log.Infof("Execute command: %s", command)
 
 	if !ok {
-		return fmt.Errorf("config中找不到相应库得配置, configs: %v, name: %s", configs, command)
+		return fmt.Errorf("config中找不到相应库得配置, configs: %v, name: %s, hook: %v", configs, command, hook)
 	}
 
 	cmd := exec.Command("/bin/bash", "-c", command)
