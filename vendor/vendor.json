@@ -69,6 +69,12 @@
 			"revisionTime": "2019-10-09T15:56:15Z"
 		},
 		{
+			"checksumSHA1": "O5bFO+v6bhXVAqFd/Fq5FZEoVGE=",
+			"path": "github.com/sirupsen/logrus",
+			"revision": "fb62dbe2f2a2c88b150fa1668a773505a7920a3d",
+			"revisionTime": "2019-10-14T20:23:44Z"
+		},
+		{
 			"checksumSHA1": "8mJ7vjP4pj4Y8FH5jVT22mW5acA=",
 			"path": "github.com/ugorji/go/codec",
 			"revision": "42bc974514ff101a54c6b72a0e4dee29d96c0b26",
