@@ -2,12 +2,14 @@ package github_hook
 
 import (
 	"encoding/json"
-	"fmt"
+	// "fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 func Start() {
 	r := gin.Default()
+	log.Info("start...")
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
@@ -21,12 +23,16 @@ func Start() {
 
 func PushHookHandler(c *gin.Context) {
 	data, _ := c.GetRawData()
-	// fmt.Printf("%s \n", data)
-
 	params := GITHUB_HOOK{}
 	json.Unmarshal(data, &params)
 
-	fmt.Printf("输出: %v \n", params)
+	log.WithFields(logrus.Fields{
+		"var": "params",
+	}).Info(params)
+
+	log.WithFields(logrus.Fields{
+		"var": "data",
+	}).Infof("%s", data)
 }
 
 type GITHUB_HOOK struct {
