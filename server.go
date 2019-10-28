@@ -29,13 +29,23 @@ func PushHookHandler(c *gin.Context) {
 	params := GithubHook{}
 	json.Unmarshal(data, &params)
 
-	log.WithFields(logrus.Fields{
-		"var": "params",
-	}).Info(params)
+	fields := logrus.Fields{}
+	json.Unmarshal(data, &fields)
+	log.WithFields(fields).Info("request_raw")
 
-	log.WithFields(logrus.Fields{
-		"var": "data",
-	}).Infof("%s", data)
+	err := execHookBash(params)
+	if err != nil {
+		log.Error(err)
+
+		c.JSON(401, gin.H{
+			"error": err.Error(),
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"message": "ok",
+		})
+	}
+
 }
 
 // GithubHook github的json结构
