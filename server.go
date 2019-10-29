@@ -77,23 +77,22 @@ type GithubHook struct {
 	}
 }
 
-// 项目名映射得脚本文件
-var configs = map[string]string{
-	"github_hook": "./scripts/hook",
-}
-
-// 执行脚本目录
-const hookScriptDirPath = "./scripts"
-
 // 执行推送的逻辑
 func execHookBash(hook GithubHook) error {
+	// 每次都读一下脚本配置
+	err := initScriptConfig()
+	if err != nil {
+		return err
+	}
 
-	command, ok := configs[hook.Repository.Name]
-	command = fmt.Sprintf("%s/%s", hookScriptDirPath, command)
+	// 把脚本的路径拼一下
+	command, err := scriptConf.Get(hook.Repository.Name)
+	command = fmt.Sprintf("%s/%s/%s", appPath, scriptRoot, command)
+
 	log.Infof("Execute command: %s", command)
-
-	if !ok {
-		return fmt.Errorf("config中找不到相应库得配置, configs: %v, name: %s, hook: %v", configs, command, hook)
+	if err != nil {
+		log.Errorf("找不到对应的command: %s, Err: %s", command, err.Error())
+		return err
 	}
 
 	cmd := exec.Command("/bin/bash", "-c", command)

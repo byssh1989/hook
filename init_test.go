@@ -35,4 +35,6 @@ func TestExecHookBash(t *testing.T) {
 func TestReadConfig(t *testing.T) {
 	ReadConfig(configPath)
 	t.Logf("config: %v \n", configs)
+	t.Log(scriptConf.Get("github_hook"))
+	t.Log(scriptConf.Get("nothing"))
 }
