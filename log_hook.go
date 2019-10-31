@@ -54,8 +54,9 @@ func (h *Hook) createFile() error {
 		return err
 	}
 
+	dirPerm, _ := strconv.ParseInt("0755", 8, 64)
 	dirpath := path.Dir(h.Filename)
-	err = os.MkdirAll(dirpath, os.FileMode(perm))
+	err = os.MkdirAll(dirpath, os.FileMode(dirPerm))
 	if err != nil {
 		return err
 	}

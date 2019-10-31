@@ -37,3 +37,7 @@ func TestReadConfig(t *testing.T) {
 	t.Log(scriptConf.Get("github_hook"))
 	t.Log(scriptConf.Get("nothing"))
 }
+
+func TestInit(t *testing.T) {
+	initScriptConfig()
+}
