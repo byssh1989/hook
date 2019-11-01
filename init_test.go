@@ -41,3 +41,7 @@ func TestReadConfig(t *testing.T) {
 func TestInit(t *testing.T) {
 	initScriptConfig()
 }
+
+func TestInitExecute(t *testing.T) {
+	Execute()
+}

@@ -1,12 +1,16 @@
 package github_hook
 
 import (
+	// "flag"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path"
+	"path/filepath"
 	"strconv"
+	"strings"
 )
 
 var log *logrus.Logger
@@ -25,9 +29,9 @@ var appPath = "."
 2. 初始化脚本目录以及文件配置
 */
 func init() {
+	InitContextPath()
 	// 初始化日志目录以及文件
 	initLog()
-
 	// 初始化脚本配置文件
 	err := initScriptConfig()
 	if err != nil {
@@ -42,6 +46,27 @@ func initLog() {
 	log.AddHook(CustomHook(fmt.Sprintf("%s/%s", appPath, logName), "0664"))
 }
 
+// var defaultDir = flag.String("dir", ".", "请输入工作目录, 默认当前")
+
+// 初始化基础配置(这个函数一定要最先执行)
+func InitContextPath() {
+	pt := GetCurrPath()
+	currnetPath := filepath.Dir(pt)
+	currentDir := filepath.Base(pt)
+	fmt.Printf("当前文件夹: %s/%s \n", currnetPath, currentDir)
+	appPath = fmt.Sprintf("%s/%s", currnetPath, currentDir)
+}
+
+// 获取当前目录
+func GetCurrPath() string {
+	file, _ := exec.LookPath(os.Args[0])
+	path, _ := filepath.Abs(file)
+	index := strings.LastIndex(path, string(os.PathSeparator))
+	ret := path[:index]
+	return ret
+}
+
+// 初始化脚本目录
 func initScriptConfig() error {
 	confFullPath := fmt.Sprintf("%s/%s", appPath, configPath)
 
@@ -49,7 +74,7 @@ func initScriptConfig() error {
 	dirpath, _ := path.Split(confFullPath)
 	if !IsExist(dirpath) {
 		dirPerm, _ := strconv.ParseInt("0755", 8, 64)
-		err := os.Mkdir(dirpath, os.FileMode(dirPerm))
+		err := os.MkdirAll(dirpath, os.FileMode(dirPerm))
 		if err != nil {
 			return err
 		}
