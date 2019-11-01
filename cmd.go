@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"strconv"
 )
 
 var daemon bool
@@ -44,7 +45,7 @@ func Execute() {
 		Use:   "stop",
 		Short: "终止命令",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("终止 %v \n", daemon)
+			Stop()
 		},
 	}
 	versionCmd := &cobra.Command{
@@ -64,4 +65,30 @@ func Execute() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+}
+
+// Stop 终止后台进程
+func Stop() {
+	pidPath := fmt.Sprintf("%s/%s", appPath, "hook.pid")
+	b, err := ioutil.ReadFile(pidPath)
+
+	if err != nil {
+		if err == os.ErrNotExist {
+			fmt.Println("pid 不存在")
+			os.Exit(0)
+		} else {
+			panic(err)
+		}
+	}
+	pid, _ := strconv.Atoi(fmt.Sprintf("%s", b))
+	pro, err := os.FindProcess(pid)
+	if err != nil {
+		panic(err)
+	}
+	err = pro.Signal(os.Interrupt)
+
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("hook 已退出, bye")
 }
