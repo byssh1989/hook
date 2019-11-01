@@ -59,7 +59,7 @@ func InitContextPath() {
 	pt := GetCurrPath()
 	currnetPath := filepath.Dir(pt)
 	currentDir := filepath.Base(pt)
-	fmt.Printf("当前文件夹: %s/%s \n", currnetPath, currentDir)
+	// fmt.Printf("当前文件夹: %s/%s \n", currnetPath, currentDir)
 	appPath = fmt.Sprintf("%s/%s", currnetPath, currentDir)
 }
 
@@ -84,7 +84,7 @@ func initScriptConfig() error {
 		if err != nil {
 			return err
 		}
-		log.Infof("初始化脚本目录, 路径为: %s", dirpath)
+		// log.Infof("初始化脚本目录, 路径为: %s", dirpath)
 	}
 
 	if !IsExist(confFullPath) {
@@ -98,7 +98,7 @@ func initScriptConfig() error {
 			return err
 		}
 		fd.Close()
-		log.Infof("初始化脚本文件, 路径为: %s", confFullPath)
+		// log.Infof("初始化脚本文件, 路径为: %s", confFullPath)
 	}
 
 	// 初始化脚本配置
