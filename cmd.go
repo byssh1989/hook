@@ -3,16 +3,19 @@ package github_hook
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"io/ioutil"
 	"os"
+	"os/exec"
 )
 
 var daemon bool
 var rootCmd = &cobra.Command{
-	Use:   "server",
-	Short: "启动服务",
-	Long:  `启动一个web服务器, 接收hook请求`,
+	Use:   "hook",
+	Short: "一个钩子服务器",
+	Long:  `接受github钩子请求, 执行对应脚本`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("啦啦啦")
+		fmt.Println("啦啦啦~")
+		fmt.Println("请执行 hook -h 查看具体命令")
 	},
 }
 
@@ -21,13 +24,20 @@ func Execute() {
 		Use:   "start",
 		Short: "启动命令",
 		Run: func(cmd *cobra.Command, args []string) {
-			if daemon {
-				fmt.Println("后台启动")
-			} else {
+			if !daemon {
 				fmt.Println("前台启动")
 				Start()
+			} else {
+				fmt.Println("后台启动")
+				appCmd := fmt.Sprintf("%s/%s", appPath, "hook")
+				command := exec.Command(appCmd, "start")
+				err := command.Start()
+				if err != nil {
+					panic(err)
+				}
+				fmt.Printf("hook start, [PID] %d running...\n", command.Process.Pid)
+				ioutil.WriteFile(fmt.Sprintf("%s/%s", appPath, "hook.pid"), []byte(fmt.Sprintf("%d", command.Process.Pid)), 0666)
 			}
-			fmt.Printf("启动 %v \n", daemon)
 		},
 	}
 	stopCmd := &cobra.Command{

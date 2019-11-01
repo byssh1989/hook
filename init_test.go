@@ -42,6 +42,6 @@ func TestInit(t *testing.T) {
 	initScriptConfig()
 }
 
-func TestInitExecute(t *testing.T) {
-	Execute()
+func TestTest(t *testing.T) {
+	CmdAndProgress()
 }

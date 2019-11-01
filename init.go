@@ -29,6 +29,7 @@ var appPath = "."
 2. 初始化脚本目录以及文件配置
 */
 func init() {
+	// 获取当前目录
 	InitContextPath()
 	// 初始化日志目录以及文件
 	initLog()
@@ -46,7 +47,12 @@ func initLog() {
 	log.AddHook(CustomHook(fmt.Sprintf("%s/%s", appPath, logName), "0664"))
 }
 
-// var defaultDir = flag.String("dir", ".", "请输入工作目录, 默认当前")
+func CmdAndProgress() {
+	command := exec.Command("pwd")
+	command.Start()
+	fmt.Printf("hook start, [PID] %d running...\n", command.Process.Pid)
+	ioutil.WriteFile("hook.pid", []byte(fmt.Sprintf("%d", command.Process.Pid)), 0666)
+}
 
 // 初始化基础配置(这个函数一定要最先执行)
 func InitContextPath() {
