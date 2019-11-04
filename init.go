@@ -22,6 +22,7 @@ const configPath = "scripts/config.json"
 const scriptRoot = "scripts"
 
 var appPath = "."
+var appName = "hook"
 
 /**
 这里负责程序的大部分初始化
@@ -61,6 +62,7 @@ func InitContextPath() {
 	currentDir := filepath.Base(pt)
 	// fmt.Printf("当前文件夹: %s/%s \n", currnetPath, currentDir)
 	appPath = fmt.Sprintf("%s/%s", currnetPath, currentDir)
+	appName = filepath.Base(os.Args[0])
 }
 
 // 获取当前目录

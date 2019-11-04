@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strconv"
 )
 
@@ -31,7 +30,6 @@ func Execute() {
 				Start()
 			} else {
 				fmt.Println("后台启动")
-				appName := filepath.Base(os.Args[0])
 				appCmd := fmt.Sprintf("%s/%s", appPath, appName)
 				command := exec.Command(appCmd, "start")
 				err := command.Start()
