@@ -90,5 +90,11 @@ func Stop() {
 	if err != nil {
 		panic(err)
 	}
+
+	err = os.Remove(pidPath)
+	if err != nil {
+		panic(err)
+	}
+
 	fmt.Println("hook 已退出, bye")
 }
