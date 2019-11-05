@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
+	"syscall"
 )
 
 var daemon bool
@@ -27,6 +28,9 @@ func Execute() {
 		Run: func(cmd *cobra.Command, args []string) {
 			if !daemon {
 				fmt.Println("前台启动")
+				pid := os.Getpid()
+				fmt.Printf("getpid: %d \n", pid)
+				setPidFile(pid)
 				Start()
 			} else {
 				fmt.Println("后台启动")
@@ -37,7 +41,7 @@ func Execute() {
 					panic(err)
 				}
 				fmt.Printf("hook start, [PID] %d running...\n", command.Process.Pid)
-				ioutil.WriteFile(fmt.Sprintf("%s/%s", appPath, "hook.pid"), []byte(fmt.Sprintf("%d", command.Process.Pid)), 0666)
+				setPidFile(command.Process.Pid)
 			}
 		},
 	}
@@ -56,11 +60,20 @@ func Execute() {
 		},
 	}
 
+	reloadCmd := &cobra.Command{
+		Use:   "reload",
+		Short: "重新加载",
+		Run: func(cmd *cobra.Command, args []string) {
+			Reload()
+		},
+	}
+
 	startCmd.Flags().BoolVarP(&daemon, "deamon", "d", false, "is daemon?")
 	startCmd.Flags().BoolVarP(&graceful, "graceful", "g", false, "is graceful restart?")
 	rootCmd.AddCommand(startCmd)
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(stopCmd)
+	rootCmd.AddCommand(reloadCmd)
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
@@ -68,8 +81,8 @@ func Execute() {
 	}
 }
 
-// Stop 终止后台进程
-func Stop() {
+// 获取程序pid值
+func getPid() int {
 	pidPath := fmt.Sprintf("%s/%s", appPath, "hook.pid")
 	b, err := ioutil.ReadFile(pidPath)
 
@@ -82,20 +95,52 @@ func Stop() {
 		}
 	}
 	pid, _ := strconv.Atoi(fmt.Sprintf("%s", b))
+	return pid
+}
+
+// 移除pid文件
+func removePidFile() {
+	pidPath := fmt.Sprintf("%s/%s", appPath, "hook.pid")
+	err := os.Remove(pidPath)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func setPidFile(pid int) {
+	ioutil.WriteFile(fmt.Sprintf("%s/%s", appPath, "hook.pid"), []byte(fmt.Sprintf("%d", pid)), 0666)
+}
+
+// Stop 终止后台进程
+func Stop() {
+	pid := getPid()
 	pro, err := os.FindProcess(pid)
 	if err != nil {
 		panic(err)
 	}
+
 	err = pro.Signal(os.Interrupt)
+	if err != nil {
+		panic(err)
+	}
+	removePidFile()
 
+	fmt.Println("程序已退出, bye")
+}
+
+// 向后台发送信号, 重载进程
+func Reload() {
+	pid := getPid()
+
+	pro, err := os.FindProcess(pid)
 	if err != nil {
 		panic(err)
 	}
 
-	err = os.Remove(pidPath)
+	err = pro.Signal(syscall.SIGUSR2)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("hook 已退出, bye")
+	fmt.Println("程序已重启")
 }
