@@ -14,13 +14,13 @@ func Start() {
 	log.Info("start...")
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"message": "pong",
+			"message": "pong v1",
 		})
 	})
 
 	r.POST("/push", PushHookHandler)
-
-	r.Run() // listen and serve on 0.0.0.0:8080
+	GraceRun(":8080", r) // listen and serve on 0.0.0.0:8080
+	// r.Run()
 }
 
 // PushHookHandler 处理推送事件

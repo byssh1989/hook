@@ -44,7 +44,7 @@ func init() {
 func initLog() {
 	// 初始化日志配置
 	log = logrus.New()
-	log.SetFormatter(&logrus.JSONFormatter{})
+	// log.SetFormatter(&logrus.JSONFormatter{})
 	log.AddHook(CustomHook(fmt.Sprintf("%s/%s", appPath, logName), "0664"))
 }
 

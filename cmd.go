@@ -57,6 +57,7 @@ func Execute() {
 	}
 
 	startCmd.Flags().BoolVarP(&daemon, "deamon", "d", false, "is daemon?")
+	startCmd.Flags().BoolVarP(&graceful, "graceful", "g", false, "is graceful restart?")
 	rootCmd.AddCommand(startCmd)
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(stopCmd)
