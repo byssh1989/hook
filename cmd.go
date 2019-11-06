@@ -1,4 +1,4 @@
-package github_hook
+package hook
 
 import (
 	"fmt"

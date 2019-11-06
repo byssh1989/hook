@@ -1,4 +1,4 @@
-package github_hook
+package hook
 
 import (
 	"encoding/json"
@@ -15,6 +15,12 @@ func Start() {
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong v4",
+		})
+	})
+
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "hello hook server",
 		})
 	})
 

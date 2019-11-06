@@ -1,4 +1,4 @@
-package github_hook
+package hook
 
 import (
 	"context"
@@ -41,6 +41,7 @@ func GraceRun(port string, handler http.Handler) {
 		err = server.Serve(listener)
 		if err == http.ErrServerClosed {
 			log.Printf("server closed \n")
+			removePidFile()
 			os.Exit(0)
 		} else {
 			log.Panicf("server.Serve err: %v \n", err)
