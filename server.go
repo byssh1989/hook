@@ -2,67 +2,18 @@ package hook
 
 import (
 	"bufio"
-	"encoding/json"
+	"context"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 	"io"
 	"os/exec"
+	"time"
 )
 
-// Start 启动服务
-func Start() {
-	r := gin.Default()
-	log.Info("start...")
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong v4",
-		})
-	})
+var cmdChan chan string
 
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "hello hook server",
-		})
-	})
-
-	r.POST("/push", PushHookHandler)
-	GraceRun(":8080", r) // listen and serve on 0.0.0.0:8080
-	// r.Run()
-}
-
-// PushHookHandler 处理推送事件
-func PushHookHandler(c *gin.Context) {
-	data, _ := c.GetRawData()
-	params := GithubHook{}
-	json.Unmarshal(data, &params)
-
-	fields := logrus.Fields{}
-	fields["raw"] = string(data)
-	log.WithFields(fields).Info("request_raw")
-
-	cmd, err := selectCMDByHook(params)
-	if err != nil {
-		log.Error(err)
-		c.JSON(401, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
-
-	err = execBash(cmd)
-	if err != nil {
-		log.Error(err)
-		c.JSON(401, gin.H{
-			"error": err.Error(),
-		})
-		return
-	} else {
-		c.JSON(200, gin.H{
-			"message": "ok",
-		})
-		return
-	}
+func init() {
+	cmdChan = make(chan string, 1000)
+	go StartCmdQuene()
 }
 
 // GithubHook github的json结构
@@ -90,6 +41,46 @@ type GithubHook struct {
 		Type      string
 		SiteAdmin bool
 	}
+}
+
+func StartCmdQuene() {
+	log.Info("启动queue")
+	for {
+		task := <-cmdChan
+		log.Infof("收到命令: %s \n", task)
+		go func(task string) {
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second*600)
+			ch := make(chan int)
+			defer close(ch)
+
+			go func(ch chan int, cmd string) {
+				err := execBash(cmd)
+				if err != nil {
+					log.Errorf("执行任务出错, cmd: %s; err: %v \n", task, err)
+				}
+				ch <- 1
+			}(ch, task)
+
+		LOOP:
+			for {
+				select {
+				case <-ctx.Done():
+					log.Errorf("执行任务超时, cmd: %s \n", task)
+				case <-ch:
+					cancel()
+					break LOOP
+				}
+			}
+		}(task)
+	}
+}
+
+func SendTask(task string) error {
+	if cap(cmdChan) > 1000 {
+		return fmt.Errorf("消息堆积, 请稍候再试")
+	}
+	cmdChan <- task
+	return nil
 }
 
 // 提取对应的cmd

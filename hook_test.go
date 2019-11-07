@@ -23,7 +23,13 @@ func TestExecHookBash(t *testing.T) {
 	params := GithubHook{}
 	json.Unmarshal(jData, &params)
 	t.Logf("%v ", params)
-	err := execHookBash(params)
+
+	cmd, err := selectCMDByHook(params)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	err = execBash(cmd)
 
 	if err != nil {
 		t.Error(err)

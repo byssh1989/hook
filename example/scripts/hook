@@ -1,0 +1,11 @@
+#!/bin/sh
+
+echo "hello hook, time:" $(date "+%Y/%m/%d-%H:%M:%S") >> test.log 
+
+for i in {1..10}
+do
+    sleep 1s
+    echo $i
+done
+
+echo "done"

@@ -17,7 +17,7 @@ var rootCmd = &cobra.Command{
 	Long:  `接受github钩子请求, 执行对应脚本`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("啦啦啦~")
-		fmt.Println("请执行 hook -h 查看具体命令")
+		fmt.Println("请执行 ./app -h 查看具体命令")
 	},
 }
 
