@@ -11,8 +11,9 @@ var scriptConf = scriptConfig{}
 // ScriptConfig 库与脚本文件名的映射关系
 type scriptConfig struct {
 	sync.RWMutex
-	data map[string]string
+	data bashMap
 }
+type bashMap map[string]string
 
 func (c *scriptConfig) Get(key string) (cmd string, err error) {
 	c.RLock()
@@ -44,6 +45,12 @@ func (c *scriptConfig) Set(key, val string) (cmd string, err error) {
 func (c *scriptConfig) Flash(data []byte) (err error) {
 	c.Lock()
 	defer c.Unlock()
+	tmp := bashMap{}
 
-	return json.Unmarshal(data, &c.data)
+	err = json.Unmarshal(data, &tmp)
+	if err != nil {
+		return err
+	}
+	c.data = tmp
+	return
 }
