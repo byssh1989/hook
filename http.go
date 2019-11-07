@@ -30,6 +30,7 @@ func Start() {
 func PushHookHandler(c *gin.Context) {
 	data, _ := c.GetRawData()
 	salt := "123123"
+
 	sign := c.GetHeader("X-Hub-Signature")
 
 	if !checkSecret(data, salt, sign) {
