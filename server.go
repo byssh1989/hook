@@ -1,10 +1,12 @@
 package hook
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"io"
 	"os/exec"
 )
 
@@ -36,10 +38,8 @@ func PushHookHandler(c *gin.Context) {
 	json.Unmarshal(data, &params)
 
 	fields := logrus.Fields{}
-	json.Unmarshal(data, &fields)
+	fields["raw"] = string(data)
 	log.WithFields(fields).Info("request_raw")
-
-	// fmt.Printf("%s \n", data)
 
 	err := execHookBash(params)
 	if err != nil {
@@ -102,12 +102,24 @@ func execHookBash(hook GithubHook) error {
 	}
 
 	cmd := exec.Command("/bin/bash", "-c", command)
-	output, err := cmd.Output()
-
+	// 非阻塞输出
+	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		log.Errorf("Execute Shell:%s failed with error:%s", command, err.Error())
 		return fmt.Errorf("Execute Shell:%s failed with error:%s", command, err.Error())
 	}
-	log.Infof("Execute Shell:%s finished with output:\n%s", command, string(output))
+
+	cmd.Start()
+	reader := bufio.NewReader(stdout)
+	for {
+		line, err2 := reader.ReadString('\n')
+		if err2 != nil || io.EOF == err2 {
+			break
+		}
+		log.Infof("%s", line)
+	}
+	cmd.Wait()
+
+	log.Infof("Execute Shell:%s finished", command)
 	return nil
 }

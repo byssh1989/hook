@@ -1,4 +1,11 @@
 #!/bin/sh
 
-echo "hello hook, time:" $(date "+%Y/%m/%d-%H:%M:%S")  >> deploy.log
+echo "hello hook, time:" $(date "+%Y/%m/%d-%H:%M:%S") 
+
+for i in {1..10}
+do
+    sleep 1s
+    echo $i
+done
+
 echo "done"
