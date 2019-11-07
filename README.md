@@ -12,6 +12,7 @@ golang v1.8+
 go get -u github.com/gaopengfei123123/hook
 ```
 
+
 创建文件 `main.go`
 ```go
 package main
