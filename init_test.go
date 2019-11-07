@@ -3,6 +3,7 @@ package hook
 import (
 	"encoding/json"
 	"github.com/sirupsen/logrus"
+	"path"
 	"testing"
 )
 
@@ -44,4 +45,14 @@ func TestInit(t *testing.T) {
 
 func TestStop(t *testing.T) {
 	Stop()
+}
+
+func TestExist(t *testing.T) {
+	confFullPath := "/Users/gpf/Documents/www/go_projects/src/hook/example/scripts/config.json"
+	res := IsExist(confFullPath)
+	t.Logf("exist: %v \n", res)
+
+	dirpath, _ := path.Split(confFullPath)
+	res = IsExist(dirpath)
+	t.Logf("dir exist: %v \n", res)
 }

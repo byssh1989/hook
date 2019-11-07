@@ -111,10 +111,14 @@ func initScriptConfig() error {
 // IsExist 文件或目录是否存在
 func IsExist(filePath string) bool {
 	_, err := os.Stat(filePath)
-	if os.IsExist(err) {
-		return true
+	if err != nil {
+		if os.IsExist(err) {
+			return true
+		}
+		return false
 	}
-	return false
+
+	return true
 }
 
 // ReadConfig 读取脚本配置
