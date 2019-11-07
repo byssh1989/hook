@@ -47,6 +47,7 @@ func PushHookHandler(c *gin.Context) {
 		c.JSON(401, gin.H{
 			"error": err.Error(),
 		})
+		return
 	}
 
 	err = execBash(cmd)
@@ -55,10 +56,12 @@ func PushHookHandler(c *gin.Context) {
 		c.JSON(401, gin.H{
 			"error": err.Error(),
 		})
+		return
 	} else {
 		c.JSON(200, gin.H{
 			"message": "ok",
 		})
+		return
 	}
 }
 
