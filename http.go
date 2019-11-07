@@ -3,6 +3,7 @@ package hook
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 // Start 启动服务
@@ -21,7 +22,7 @@ func Start() {
 		})
 	})
 
-	r.POST("/push", LogMiddleware(), PushHookHandler)
+	r.POST("/push", GithubSecret(), PushHookHandler)
 	GraceRun(":8080", r) // listen and serve on 0.0.0.0:8080
 	// r.Run()
 }
@@ -30,8 +31,11 @@ func Start() {
 func PushHookHandler(c *gin.Context) {
 	data, _ := c.GetRawData()
 	salt := "123123"
-
 	sign := c.GetHeader("X-Hub-Signature")
+
+	fields := logrus.Fields{}
+	fields["raw"] = string(data)
+	log.WithFields(fields).Info("request_raw")
 
 	if !checkSecret(data, salt, sign) {
 		c.JSON(401, gin.H{

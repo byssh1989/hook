@@ -131,6 +131,7 @@ func execBash(command string) error {
 }
 
 func checkSecret(payload []byte, salt, sign string) bool {
+	// log.Infof("payload: %x, salt: %s, sign: %s \n", payload, salt, sign)
 	mac := hmac.New(sha1.New, []byte(salt))
 	mac.Write(payload)
 	res := fmt.Sprintf("sha1=%x", mac.Sum(nil))
