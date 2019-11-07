@@ -41,10 +41,17 @@ func PushHookHandler(c *gin.Context) {
 	fields["raw"] = string(data)
 	log.WithFields(fields).Info("request_raw")
 
-	err := execHookBash(params)
+	cmd, err := selectCMDByHook(params)
 	if err != nil {
 		log.Error(err)
+		c.JSON(401, gin.H{
+			"error": err.Error(),
+		})
+	}
 
+	err = execBash(cmd)
+	if err != nil {
+		log.Error(err)
 		c.JSON(401, gin.H{
 			"error": err.Error(),
 		})
@@ -53,7 +60,6 @@ func PushHookHandler(c *gin.Context) {
 			"message": "ok",
 		})
 	}
-
 }
 
 // GithubHook github的json结构
@@ -83,24 +89,28 @@ type GithubHook struct {
 	}
 }
 
-// 执行推送的逻辑
-func execHookBash(hook GithubHook) error {
+// 提取对应的cmd
+func selectCMDByHook(hook GithubHook) (command string, err error) {
 	// 每次都读一下脚本配置
-	err := initScriptConfig()
+	err = initScriptConfig()
 	if err != nil {
-		return err
+		return
 	}
 
 	// 把脚本的路径拼一下
-	command, err := scriptConf.Get(hook.Repository.Name)
+	command, err = scriptConf.Get(hook.Repository.Name)
 	command = fmt.Sprintf("%s/%s/%s", appPath, scriptRoot, command)
 
 	log.Infof("Execute command: %s", command)
 	if err != nil {
 		log.Errorf("找不到对应的command: %s, Err: %s", command, err.Error())
-		return err
+		return
 	}
+	return
+}
 
+// 执行推送的逻辑
+func execBash(command string) error {
 	cmd := exec.Command("/bin/bash", "-c", command)
 	// 非阻塞输出
 	stdout, err := cmd.StdoutPipe()
