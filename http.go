@@ -22,7 +22,7 @@ func Start() {
 		})
 	})
 
-	r.POST("/push", PushHookHandler)
+	r.POST("/push", GithubSecret(), PushHookHandler)
 	GraceRun(":8080", r) // listen and serve on 0.0.0.0:8080
 	// r.Run()
 }
@@ -30,6 +30,16 @@ func Start() {
 // PushHookHandler 处理推送事件
 func PushHookHandler(c *gin.Context) {
 	data, _ := c.GetRawData()
+	salt := "123123"
+	sign := c.GetHeader("X-Hub-Signature")
+
+	if !checkSecret(data, salt, sign) {
+		c.JSON(401, gin.H{
+			"error": "签名错误",
+		})
+		return
+	}
+
 	params := GithubHook{}
 	json.Unmarshal(data, &params)
 

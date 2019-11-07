@@ -3,6 +3,8 @@ package hook
 import (
 	"bufio"
 	"context"
+	"crypto/hmac"
+	"crypto/sha1"
 	"fmt"
 	"io"
 	"os/exec"
@@ -126,4 +128,11 @@ func execBash(command string) error {
 
 	log.Infof("Execute Shell:%s finished", command)
 	return nil
+}
+
+func checkSecret(payload []byte, salt, sign string) bool {
+	mac := hmac.New(sha1.New, []byte(salt))
+	mac.Write(payload)
+	res := fmt.Sprintf("sha1=%x", mac.Sum(nil))
+	return res == sign
 }
