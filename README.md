@@ -45,6 +45,11 @@ go build -o app main.go
 说明服务已经启动成功, 服务地址为`0.0.0.0:8080`
 
 
+### 接口
+
+* `0.0.0.0:8080/ping`   检测接口
+* `0.0.0.0:8080/push`   接受github webhook请求, 根据 Repository.Name 去判断执行什么脚本
+
 
 
 ### 目录功能:
