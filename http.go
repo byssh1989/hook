@@ -3,7 +3,6 @@ package hook
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 )
 
 // Start 启动服务
@@ -22,7 +21,7 @@ func Start() {
 		})
 	})
 
-	r.POST("/push", GithubSecret(), PushHookHandler)
+	r.POST("/push", LogMiddleware(), PushHookHandler)
 	GraceRun(":8080", r) // listen and serve on 0.0.0.0:8080
 	// r.Run()
 }
@@ -42,10 +41,6 @@ func PushHookHandler(c *gin.Context) {
 
 	params := GithubHook{}
 	json.Unmarshal(data, &params)
-
-	fields := logrus.Fields{}
-	fields["raw"] = string(data)
-	log.WithFields(fields).Info("request_raw")
 
 	cmd, err := selectCMDByHook(params)
 	if err != nil {
