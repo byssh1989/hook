@@ -61,5 +61,5 @@ go build -o app main.go
 
 TODO:
 1. 平滑重启(done)
-2. 调整配置文件结构, 支持scret验证
+2. 调整配置文件结构, 支持scret验证 
 

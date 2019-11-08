@@ -87,11 +87,11 @@ func SendTask(task string) error {
 
 // 提取对应的cmd
 func selectCMDByHook(hook GithubHook) (command string, err error) {
-	// 每次都读一下脚本配置
-	err = initScriptConfig()
-	if err != nil {
-		return
-	}
+	// // 每次都读一下脚本配置
+	// err = initScriptConfig()
+	// if err != nil {
+	// 	return
+	// }
 
 	// 把脚本的路径拼一下
 	command, err = scriptConf.Get(hook.Repository.Name)
