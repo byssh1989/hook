@@ -95,7 +95,7 @@ func initScriptConfig() error {
 		if err != nil {
 			return err
 		}
-		_, err = fd.Write([]byte(`{"repository-name":"script-name"}`))
+		_, err = fd.Write([]byte(`{"github_hook":{"secret":"xxxxxx","script_path":"","event":{"push":"test"}}}`))
 		if err != nil {
 			return err
 		}

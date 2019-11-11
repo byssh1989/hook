@@ -63,6 +63,16 @@ func TestReadConfig(t *testing.T) {
 
 func TestInit(t *testing.T) {
 	initScriptConfig()
+	t.Logf("conf: %v \n", scriptConf)
+	conf, err := scriptConf.Get("github_hook")
+	if err != nil {
+		t.Error(err)
+	}
+
+	cmd, err := conf.EventBash("push")
+
+	t.Logf("cmd: %s, err: %v \n", cmd, err)
+
 }
 
 func TestStop(t *testing.T) {

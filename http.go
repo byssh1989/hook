@@ -29,25 +29,25 @@ func Start() {
 
 // PushHookHandler 处理推送事件
 func PushHookHandler(c *gin.Context) {
-	data, _ := c.GetRawData()
-	salt := "123123"
-	sign := c.GetHeader("X-Hub-Signature")
 
-	fields := logrus.Fields{}
-	fields["raw"] = string(data)
-	log.WithFields(fields).Info("request_raw")
+	// if !checkSecret(data, salt, sign) {
+	// 	c.JSON(401, gin.H{
+	// 		"error": "签名错误",
+	// 	})
+	// 	return
+	// }
+	params, err := InitGithubHook(c)
 
-	if !checkSecret(data, salt, sign) {
+	if err != nil {
+		log.Error(err)
 		c.JSON(401, gin.H{
-			"error": "签名错误",
+			"error": err.Error(),
 		})
 		return
 	}
 
-	params := GithubHook{}
-	json.Unmarshal(data, &params)
-
 	cmd, err := selectCMDByHook(params)
+
 	if err != nil {
 		log.Error(err)
 		c.JSON(401, gin.H{
@@ -69,4 +69,25 @@ func PushHookHandler(c *gin.Context) {
 		})
 		return
 	}
+}
+
+func InitGithubHook(c *gin.Context) (hk GithubHook, err error) {
+	data, _ := c.GetRawData()
+	sign := c.GetHeader("X-Hub-Signature")
+	event := c.GetHeader("X-GitHub-Event")
+
+	fields := logrus.Fields{}
+	fields["raw"] = string(data)
+	log.WithFields(fields).Info("request_raw")
+
+	hk = GithubHook{}
+	err = json.Unmarshal(data, &hk)
+	if err != nil {
+		return
+	}
+
+	hk.Event = event
+	hk.Signature = sign
+	hk.Payload = data
+	return
 }

@@ -20,9 +20,12 @@ func init() {
 
 // GithubHook github的json结构
 type GithubHook struct {
-	Zen    string
-	HookID int
-	Hook   struct {
+	Event     string `json:"-"`
+	Signature string `json:"-"`
+	Payload   []byte `json:"-"`
+	Zen       string
+	HookID    int
+	Hook      struct {
 		Type   string
 		ID     int
 		Name   string
@@ -87,21 +90,22 @@ func SendTask(task string) error {
 
 // 提取对应的cmd
 func selectCMDByHook(hook GithubHook) (command string, err error) {
-	// // 每次都读一下脚本配置
-	// err = initScriptConfig()
-	// if err != nil {
-	// 	return
-	// }
-
 	// 把脚本的路径拼一下
-	command, err = scriptConf.Get(hook.Repository.Name)
-	command = fmt.Sprintf("%s/%s/%s", appPath, scriptRoot, command)
-
-	log.Infof("Execute command: %s", command)
+	conf, err := scriptConf.Get(hook.Repository.Name)
 	if err != nil {
-		log.Errorf("找不到对应的command: %s, Err: %s", command, err.Error())
 		return
 	}
+
+	if err = conf.Validate(hook.Payload, hook.Signature); err != nil {
+		return "", err
+	}
+
+	command, err = conf.EventBash(hook.Event)
+	log.Infof("Execute command: %s", command)
+	if err != nil {
+		return
+	}
+
 	return
 }
 
