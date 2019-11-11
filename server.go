@@ -102,7 +102,7 @@ func selectCMDByHook(hook GithubHook) (command string, err error) {
 	now := time.Now().Unix()
 	cha := now - hook.Repository.PushedAt
 	if cha > 3 || cha < -3 {
-		err = fmt.Errorf("请求超时")
+		err = ErrTimeout
 		return
 	}
 

@@ -68,7 +68,7 @@ func (r repo) ValidateSign(payload []byte, sign string) (err error) {
 	}
 	pass := checkSecret(payload, r.Secret, sign)
 	if !pass {
-		err = fmt.Errorf("validate fault")
+		err = ErrSignature
 	}
 	return
 }

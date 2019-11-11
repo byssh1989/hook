@@ -59,7 +59,13 @@ go build -o app main.go
 * hook.pid 存放进程pid
 
 
-TODO:
-1. 平滑重启(done)
-2. 调整配置文件结构, 支持scret验证 
+### 特性
+* 一键初始化
+* 平滑重启, 信号通信
+* 支持secret验证
+* 异步执行脚本
+* 规避重放
+* 脚本传递参数(TODO)
+* 事件钩子(TODO)
+
 

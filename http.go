@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"net/http"
 )
 
 // Start 启动服务
@@ -34,9 +35,20 @@ func PushHookHandler(c *gin.Context) {
 
 	if err != nil {
 		log.Error(err)
-		c.JSON(401, gin.H{
-			"error": err.Error(),
-		})
+		switch err {
+		case ErrTimeout:
+			c.JSON(http.StatusOK, gin.H{
+				"error": err.Error(),
+			})
+		case ErrSignature:
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": err.Error(),
+			})
+		default:
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+		}
 		return
 	}
 
@@ -44,7 +56,7 @@ func PushHookHandler(c *gin.Context) {
 
 	if err != nil {
 		log.Error(err)
-		c.JSON(401, gin.H{
+		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
 		return
@@ -53,12 +65,12 @@ func PushHookHandler(c *gin.Context) {
 	err = SendTask(cmd)
 	if err != nil {
 		log.Error(err)
-		c.JSON(401, gin.H{
+		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
 		return
 	} else {
-		c.JSON(200, gin.H{
+		c.JSON(http.StatusOK, gin.H{
 			"message": "ok",
 		})
 		return

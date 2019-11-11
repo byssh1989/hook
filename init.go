@@ -2,6 +2,7 @@ package hook
 
 import (
 	// "flag"
+	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
@@ -23,6 +24,9 @@ const scriptRoot = "scripts"
 
 var appPath = "."
 var appName = "hook"
+
+var ErrTimeout = errors.New("数据超时")
+var ErrSignature = errors.New("签名错误")
 
 /**
 这里负责程序的大部分初始化
