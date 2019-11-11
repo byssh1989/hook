@@ -1,6 +1,6 @@
 {
     "hook": {
-        "secret": "123123",
+        "secret": "",
         "script_path": "",
         "event": {
             "push": "hook"
