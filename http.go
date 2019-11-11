@@ -28,46 +28,44 @@ func Start() {
 	// r.Run()
 }
 
+func renderErr(c *gin.Context, err error) {
+	log.Error(err)
+	switch err {
+	case ErrTimeout:
+		c.JSON(http.StatusOK, gin.H{
+			"error": err.Error(),
+		})
+	case ErrSignature:
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": err.Error(),
+		})
+	default:
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+	}
+}
+
 // PushHookHandler 处理推送事件
 func PushHookHandler(c *gin.Context) {
 
 	params, err := InitGithubHook(c)
 
 	if err != nil {
-		log.Error(err)
-		switch err {
-		case ErrTimeout:
-			c.JSON(http.StatusOK, gin.H{
-				"error": err.Error(),
-			})
-		case ErrSignature:
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": err.Error(),
-			})
-		default:
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-		}
+		renderErr(c, err)
 		return
 	}
 
 	cmd, err := selectCMDByHook(params)
 
 	if err != nil {
-		log.Error(err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		renderErr(c, err)
 		return
 	}
 
 	err = SendTask(cmd)
 	if err != nil {
-		log.Error(err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		renderErr(c, err)
 		return
 	} else {
 		c.JSON(http.StatusOK, gin.H{
