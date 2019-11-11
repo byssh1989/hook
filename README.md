@@ -69,3 +69,8 @@ go build -o app main.go
 * 事件钩子(TODO)
 
 
+### 依赖组件
+
+* http框架 [gin](https://github.com/gin-gonic/gin)
+* 日志组件 [logrus](https://github.com/sirupsen/logrus)
+* 命令行组件 [cobra](https://github.com/spf13/cobra)
