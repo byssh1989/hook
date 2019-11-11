@@ -90,7 +90,7 @@ func initScriptConfig() error {
 	}
 
 	if !IsExist(confFullPath) {
-		filePerm, _ := strconv.ParseInt("0744", 8, 64)
+		filePerm, _ := strconv.ParseInt("0740", 8, 64)
 		fd, err := os.OpenFile(confFullPath, os.O_WRONLY|os.O_CREATE, os.FileMode(filePerm))
 		if err != nil {
 			return err
