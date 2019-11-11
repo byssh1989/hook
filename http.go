@@ -30,12 +30,6 @@ func Start() {
 // PushHookHandler 处理推送事件
 func PushHookHandler(c *gin.Context) {
 
-	// if !checkSecret(data, salt, sign) {
-	// 	c.JSON(401, gin.H{
-	// 		"error": "签名错误",
-	// 	})
-	// 	return
-	// }
 	params, err := InitGithubHook(c)
 
 	if err != nil {

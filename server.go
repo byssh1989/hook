@@ -38,6 +38,7 @@ type GithubHook struct {
 		Name     string
 		FullName string `json:"full_name"`
 		Private  bool
+		PushedAt int64 `json:"pushed_at"`
 	}
 	Sender struct {
 		ID        int
@@ -46,6 +47,13 @@ type GithubHook struct {
 		Type      string
 		SiteAdmin bool
 	}
+	HeadCommit headCommit `json:"head_commit"`
+}
+
+type headCommit struct {
+	ID                       string
+	Timestamp                string
+	Added, Removed, Modified []string
 }
 
 func StartCmdQuene() {
@@ -90,13 +98,21 @@ func SendTask(task string) error {
 
 // 提取对应的cmd
 func selectCMDByHook(hook GithubHook) (command string, err error) {
+	// 规避一下重放问题
+	now := time.Now().Unix()
+	cha := now - hook.Repository.PushedAt
+	if cha > 3 || cha < -3 {
+		err = fmt.Errorf("请求超时")
+		return
+	}
+
 	// 把脚本的路径拼一下
 	conf, err := scriptConf.Get(hook.Repository.Name)
 	if err != nil {
 		return
 	}
 
-	if err = conf.Validate(hook.Payload, hook.Signature); err != nil {
+	if err = conf.ValidateSign(hook.Payload, hook.Signature); err != nil {
 		return "", err
 	}
 

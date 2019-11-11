@@ -62,7 +62,7 @@ func (c *scriptConfig) Flash(data []byte) (err error) {
 }
 
 // 获取密钥
-func (r repo) Validate(payload []byte, sign string) (err error) {
+func (r repo) ValidateSign(payload []byte, sign string) (err error) {
 	if r.Secret == "" {
 		return
 	}
