@@ -25,7 +25,10 @@ const scriptRoot = "scripts"
 var appPath = "."
 var appName = "hook"
 
+// ErrTimeout 数据超时, 当请求出现重放的时候
 var ErrTimeout = errors.New("数据超时")
+
+// ErrSignature 签名错误
 var ErrSignature = errors.New("签名错误")
 
 /**
@@ -52,6 +55,7 @@ func initLog() {
 	log.AddHook(CustomHook(fmt.Sprintf("%s/%s", appPath, logName), "0664"))
 }
 
+// CmdAndProgress 测试用
 func CmdAndProgress() {
 	command := exec.Command("pwd")
 	command.Start()
@@ -59,7 +63,7 @@ func CmdAndProgress() {
 	ioutil.WriteFile("hook.pid", []byte(fmt.Sprintf("%d", command.Process.Pid)), 0666)
 }
 
-// 初始化基础配置(这个函数一定要最先执行)
+// InitContextPath 初始化基础配置(这个函数一定要最先执行)
 func InitContextPath() {
 	pt := GetCurrPath()
 	currnetPath := filepath.Dir(pt)
@@ -69,7 +73,7 @@ func InitContextPath() {
 	appName = filepath.Base(os.Args[0])
 }
 
-// 获取当前目录
+// GetCurrPath 获取当前目录
 func GetCurrPath() string {
 	file, _ := exec.LookPath(os.Args[0])
 	path, _ := filepath.Abs(file)

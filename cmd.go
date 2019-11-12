@@ -21,6 +21,7 @@ var rootCmd = &cobra.Command{
 	},
 }
 
+// Execute 整体启动命令
 func Execute() {
 	startCmd := &cobra.Command{
 		Use:   "start",
@@ -128,7 +129,7 @@ func Stop() {
 	fmt.Println("程序已退出, bye")
 }
 
-// 向后台发送信号, 重载进程
+// Reload 向后台发送信号, 重载进程
 func Reload() {
 	pid := getPid()
 

@@ -18,6 +18,7 @@ var (
 	graceful = false
 )
 
+// GraceRun 软启动
 func GraceRun(port string, handler http.Handler) {
 	log.Println("grace run")
 

@@ -81,7 +81,7 @@ func (r repo) EventBash(event string) (cmd string, err error) {
 
 	command, ok := r.Event[event]
 	if !ok {
-		err = fmt.Errorf("[Event: %v] 不存在 \n", event)
+		err = fmt.Errorf("[Event: %v] 不存在", event)
 	}
 
 	cmd = fmt.Sprintf("%s/%s", pt, command)

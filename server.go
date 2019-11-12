@@ -56,6 +56,7 @@ type headCommit struct {
 	Added, Removed, Modified []string
 }
 
+// StartCmdQuene 启动命令行队列
 func StartCmdQuene() {
 	log.Info("启动queue")
 	for {
@@ -88,6 +89,7 @@ func StartCmdQuene() {
 	}
 }
 
+// SendTask 发送要执行的命令
 func SendTask(task string) error {
 	if cap(cmdChan) > 1000 {
 		return fmt.Errorf("消息堆积, 请稍候再试")

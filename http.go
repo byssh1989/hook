@@ -67,14 +67,14 @@ func PushHookHandler(c *gin.Context) {
 	if err != nil {
 		renderErr(c, err)
 		return
-	} else {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "ok",
-		})
-		return
 	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "ok",
+	})
+	return
 }
 
+// InitGithubHook 格式化hook数据
 func InitGithubHook(c *gin.Context) (hk GithubHook, err error) {
 	data, _ := c.GetRawData()
 	sign := c.GetHeader("X-Hub-Signature")
