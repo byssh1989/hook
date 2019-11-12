@@ -1,7 +1,7 @@
 package main
 
 import (
-	"hook"
+	"github.com/gaopengfei123123/hook"
 )
 
 func main() {

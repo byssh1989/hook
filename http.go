@@ -13,7 +13,7 @@ func Start() {
 	log.Info("start...")
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"message": "pong v4",
+			"message": "pong v5",
 		})
 	})
 
