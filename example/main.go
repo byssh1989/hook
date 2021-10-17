@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/gaopengfei123123/hook"
+	"github.com/byssh1989/hook"
 )
 
 func main() {
