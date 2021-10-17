@@ -24,7 +24,7 @@ func Start() {
 	})
 
 	r.POST("/push", GithubSecret(), PushHookHandler)
-	GraceRun(":8080", r) // listen and serve on 0.0.0.0:8080
+	GraceRun(":7070", r) // listen and serve on 0.0.0.0:7070
 	// r.Run()
 }
 
